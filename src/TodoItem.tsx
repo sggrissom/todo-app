@@ -1,6 +1,17 @@
 import { useState } from 'react'
 
-function TodoItem({ todo, onDelete }) {
+interface Todo {
+  id: number
+  text: string
+  completed: boolean
+}
+
+interface TodoItemProps {
+  todo: Todo
+  onDelete: (id: number) => void
+}
+
+function TodoItem({ todo, onDelete }: TodoItemProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
@@ -8,7 +19,7 @@ function TodoItem({ todo, onDelete }) {
     try {
       setIsDeleting(true)
 
-      // TODO: delete API
+      // TODO: delete api
       await new Promise(resolve => setTimeout(resolve, 500))
 
       onDelete(todo.id)
@@ -28,14 +39,14 @@ function TodoItem({ todo, onDelete }) {
       {showConfirm ? (
         <div className="todo-actions confirm">
           <span className="confirm-text">Delete?</span>
-          <button 
+          <button
             className="confirm-button yes"
             onClick={handleDelete}
             disabled={isDeleting}
           >
             {isDeleting ? '...' : 'Yes'}
           </button>
-          <button 
+          <button
             className="confirm-button no"
             onClick={() => setShowConfirm(false)}
             disabled={isDeleting}
@@ -44,7 +55,7 @@ function TodoItem({ todo, onDelete }) {
           </button>
         </div>
       ) : (
-          <button 
+          <button
             className="delete-button"
             onClick={() => setShowConfirm(true)}
             aria-label="Delete todo"

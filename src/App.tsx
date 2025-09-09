@@ -2,11 +2,17 @@ import { useState, useEffect } from 'react'
 import TodoItem from './TodoItem'
 import './App.css'
 
+interface Todo {
+  id: number
+  text: string
+  completed: boolean
+}
+
 function App() {
-  const [todos, setTodos] = useState([])
+  const [todos, setTodos] = useState<Todo[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
@@ -36,7 +42,7 @@ function App() {
     }
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (inputValue.trim() && !isSaving) {
       try {
@@ -51,7 +57,7 @@ function App() {
 
         // fake network call delay
         await new Promise(resolve => setTimeout(resolve, 2000))
-        const savedTodo = { ...newTodo, id: Date.now() }
+        const savedTodo: Todo = { ...newTodo, id: Date.now() }
 
         setTodos([...todos, savedTodo])
         setInputValue('')
@@ -64,7 +70,7 @@ function App() {
     }
   }
 
-  const handleDelete = (todoId) => {
+  const handleDelete = (todoId: number) => {
     setTodos(todos.filter(todo => todo.id !== todoId))
   }
 
