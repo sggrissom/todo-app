@@ -103,7 +103,9 @@
   margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 .todo-item:hover {
@@ -189,6 +191,73 @@ to { transform: rotate(360deg); }
   box-shadow: none;
 }
 
+/* Delete button */
+.delete-button {
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.delete-button:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 4px;
+}
+
+/* Confirmation state */
+.todo-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.confirm-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin-right: 0.25rem;
+}
+
+.confirm-button {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirm-button.yes {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.confirm-button.yes:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.confirm-button.no {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.confirm-button.no:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.confirm-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (prefers-color-scheme: light) {
   .app {
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -263,5 +332,41 @@ to { transform: rotate(360deg); }
   .error-message {
     background: rgba(239, 68, 68, 0.05);
     color: #dc2626;
+  }
+
+  .delete-button {
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  .delete-button:hover {
+    color: #dc2626;
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  .confirm-text {
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .confirm-button {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+  }
+
+  .confirm-button.yes {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: #dc2626;
+  }
+
+  .confirm-button.yes:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.2);
+  }
+
+  .confirm-button.no {
+    background: rgba(0, 0, 0, 0.03);
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .confirm-button.no:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.05);
   }
 }

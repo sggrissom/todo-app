@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import TodoItem from './TodoItem'
 import './App.css'
 
 function App() {
@@ -63,6 +64,10 @@ function App() {
     }
   }
 
+  const handleDelete = (todoId) => {
+    setTodos(todos.filter(todo => todo.id !== todoId))
+  }
+
   return (
     <div className="app">
       <header className="app-header">
@@ -107,9 +112,11 @@ function App() {
               ) : (
                   <ul className="todo-list">
                     {todos.map(todo => (
-                      <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-                        <span className="todo-text">{todo.text}</span>
-                      </li>
+                      <TodoItem
+                        key={todo.id}
+                        todo={todo}
+                        onDelete={handleDelete}
+                      />
                     ))}
                   </ul>
                 )}
