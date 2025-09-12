@@ -3,12 +3,15 @@ import TodoItem from './TodoItem'
 import { todoService, type Todo } from './services/todoService'
 import './App.css'
 
+type FilterType = 'all' | 'active' | 'completed'
+
 function App() {
   const [todos, setTodos] = useState<Todo[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [filter, setFilter] = useState<FilterType>('all')
 
   useEffect(() => {
     fetchTodos()
@@ -86,6 +89,17 @@ function App() {
     }
   }
 
+  const filteredTodos = todos.filter(todo => {
+    switch (filter) {
+      case 'active':
+        return !todo.completed
+      case 'completed':
+        return todo.completed
+      default:
+        return true
+    }
+  })
+
   return (
     <div className="app">
       <header className="app-header">
@@ -123,13 +137,34 @@ function App() {
                 </button>
               </form>
 
-              {todos.length === 0 ? (
+              <div className="filter-controls">
+                <button
+                  className={`filter-button ${filter === 'all' ? 'active' : ''}`}
+                  onClick={() => setFilter('all')}
+                >
+                  All ({todos.length})
+                </button>
+                <button
+                  className={`filter-button ${filter === 'active' ? 'active' : ''}`}
+                  onClick={() => setFilter('active')}
+                >
+                  Active ({todos.filter(t => !t.completed).length})
+                </button>
+                <button
+                  className={`filter-button ${filter === 'completed' ? 'active' : ''}`}
+                  onClick={() => setFilter('completed')}
+                >
+                  Completed ({todos.filter(t => t.completed).length})
+                </button>
+              </div>
+
+              {filteredTodos.length === 0 ? (
                 <div className="empty-state">
-                  <p>No todos yet.</p>
+                  <p>{filter === 'all' ? 'No todos yet.' : `No ${filter} todos.`}</p>
                 </div>
               ) : (
                   <ul className="todo-list">
-                    {todos.map(todo => (
+                    {filteredTodos.map(todo => (
                       <TodoItem
                         key={todo.id}
                         todo={todo}
