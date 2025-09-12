@@ -8,21 +8,19 @@ interface Todo {
 
 interface TodoItemProps {
   todo: Todo
-  onDelete: (id: number) => void
+  onDelete: (id: number) => Promise<void>
+  onToggle: (id: number) => Promise<void>
 }
 
-function TodoItem({ todo, onDelete }: TodoItemProps) {
+function TodoItem({ todo, onDelete, onToggle }: TodoItemProps) {
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isToggling, setIsToggling] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-
-      // TODO: delete api
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      onDelete(todo.id)
+      await onDelete(todo.id)
       setShowConfirm(false)
     } catch (err) {
       console.error('Error deleting todo:', err)
@@ -32,8 +30,26 @@ function TodoItem({ todo, onDelete }: TodoItemProps) {
     }
   }
 
+  const handleToggle = async () => {
+    try {
+      setIsToggling(true)
+      await onToggle(todo.id)
+    } catch (err) {
+      console.error('Error toggling todo:', err)
+    } finally {
+      setIsToggling(false)
+    }
+  }
+
   return (
     <li className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+      <input
+        type="checkbox"
+        checked={todo.completed}
+        onChange={handleToggle}
+        disabled={isToggling}
+        className="todo-checkbox"
+      />
       <span className="todo-text">{todo.text}</span>
 
       {showConfirm ? (

@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react'
 import TodoItem from './TodoItem'
+import { todoService, type Todo } from './services/todoService'
 import './App.css'
-
-interface Todo {
-  id: number
-  text: string
-  completed: boolean
-}
 
 function App() {
   const [todos, setTodos] = useState<Todo[]>([])
@@ -23,17 +18,8 @@ function App() {
     try {
       setIsLoading(true)
       setError(null)
-
-      // TODO: Replace with actual API call
-
-      // fake network call delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      setTodos([
-        { id: 1, text: 'completed todo', completed: true },
-        { id: 2, text: 'todo 1', completed: false },
-        { id: 3, text: 'todo 2', completed: false },
-        { id: 5, text: 'todo 3', completed: false }
-      ])
+      const fetchedTodos = await todoService.fetchTodos()
+      setTodos(fetchedTodos)
     } catch (err) {
       setError('Failed to load todos')
       console.error('Error fetching todos:', err)
@@ -53,12 +39,7 @@ function App() {
           completed: false
         }
 
-        // TODO: Replace with API call
-
-        // fake network call delay
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        const savedTodo: Todo = { ...newTodo, id: Date.now() }
-
+        const savedTodo = await todoService.createTodo(newTodo)
         setTodos([...todos, savedTodo])
         setInputValue('')
       } catch (err) {
@@ -70,8 +51,39 @@ function App() {
     }
   }
 
-  const handleDelete = (todoId: number) => {
-    setTodos(todos.filter(todo => todo.id !== todoId))
+  const handleDelete = async (todoId: number) => {
+    try {
+      await todoService.deleteTodo(todoId)
+      setTodos(todos.filter(todo => todo.id !== todoId))
+    } catch (err) {
+      setError('Failed to delete todo')
+      console.error('Error deleting todo:', err)
+    }
+  }
+
+  const handleToggle = async (todoId: number) => {
+    try {
+      const todoToUpdate = todos.find(todo => todo.id === todoId)
+      if (!todoToUpdate) return
+
+      const newCompleted = !todoToUpdate.completed
+      setTodos(todos.map(todo =>
+        todo.id === todoId
+          ? { ...todo, completed: newCompleted }
+          : todo
+      ))
+
+      await todoService.updateTodo(todoId, { completed: newCompleted })
+
+    } catch (err) {
+      setTodos(todos.map(todo =>
+        todo.id === todoId
+          ? { ...todo, completed: todoToUpdate.completed }
+          : todo
+      ))
+      setError('Failed to update todo')
+      console.error('Error updating todo:', err)
+    }
   }
 
   return (
@@ -122,6 +134,7 @@ function App() {
                         key={todo.id}
                         todo={todo}
                         onDelete={handleDelete}
+                        onToggle={handleToggle}
                       />
                     ))}
                   </ul>
