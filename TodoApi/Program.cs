@@ -14,29 +14,42 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-var summaries = new[]
+app.MapGet("/todos", () =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    var todos = new[]
+    {
+        new Todo(1, "completed todo", false),
+        new Todo(2, "todo 1", true),
+        new Todo(3, "todo 2", false),
+        new Todo(4, "todo 3", false)
+    };
+    return todos;
 })
-.WithName("GetWeatherForecast")
+.WithName("GetTodos")
+.WithOpenApi();
+
+app.MapPost("/todos", (Todo newTodo) =>
+{
+    var createdTodo = newTodo with { Id = Random.Shared.Next(1000, 9999) };
+    return Results.Created($"/todos/{createdTodo.Id}", createdTodo);
+})
+.WithName("CreateTodo")
+.WithOpenApi();
+
+app.MapDelete("/todos/{id}", (int id) =>
+{
+    return Results.Ok($"Deleted todo {id}");
+})
+.WithName("DeleteTodo")
+.WithOpenApi();
+
+app.MapPut("/todos/{id}", (int id, Todo updatedTodo) =>
+{
+    return Results.Ok(updatedTodo with { Id = id });
+})
+.WithName("UpdateTodo")
 .WithOpenApi();
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+record Todo(int Id, string Text, bool Completed);
