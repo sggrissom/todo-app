@@ -86,3 +86,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Terraform files
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+.terraform/
+tfplan
+terraform.tfvars
+
+# Deployment artifacts
+*.tar.gz
+*.zip
