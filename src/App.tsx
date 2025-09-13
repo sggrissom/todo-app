@@ -89,6 +89,26 @@ function App() {
     }
   }
 
+  const handleEdit = async (todoId: number, newText: string) => {
+    try {
+      const todoToUpdate = todos.find(todo => todo.id === todoId)
+      if (!todoToUpdate) return
+
+      const updatedTodo = { ...todoToUpdate, text: newText }
+      setTodos(todos.map(todo =>
+        todo.id === todoId ? updatedTodo : todo
+      ))
+
+      await todoService.updateTodo(todoId, updatedTodo)
+    } catch (err) {
+      setTodos(todos.map(todo =>
+        todo.id === todoId ? todoToUpdate : todo
+      ))
+      setError('Failed to update todo')
+      console.error('Error updating todo:', err)
+    }
+  }
+
   const filteredTodos = todos.filter(todo => {
     switch (filter) {
       case 'active':
@@ -170,6 +190,7 @@ function App() {
                         todo={todo}
                         onDelete={handleDelete}
                         onToggle={handleToggle}
+                        onEdit={handleEdit}
                       />
                     ))}
                   </ul>
