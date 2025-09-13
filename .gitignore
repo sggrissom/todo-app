@@ -31,6 +31,9 @@ artifacts/
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
+# Generated frontend files
+TodoApi/wwwroot/
+
 # NuGet Packages
 *.nupkg
 # NuGet Symbol Packages

@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:prod": "npm run build && npm run copy:dist",
+    "copy:dist": "rm -rf TodoApi/wwwroot && mkdir -p TodoApi/wwwroot && cp -r dist/* TodoApi/wwwroot/",
+    "start": "npm run build:prod && cd TodoApi && /home/sgg/.dotnet/dotnet run",
+    "start:dev": "cd TodoApi && /home/sgg/.dotnet/dotnet run"
   },
   "dependencies": {
     "react": "^19.1.1",

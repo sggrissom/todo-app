@@ -12,15 +12,9 @@ interface CreateTodoRequest {
 class TodoService {
   async fetchTodos(): Promise<Todo[]> {
     try {
-      // TODO: Replace with actual API call
-      // fake network call delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      return [
-        { id: 1, text: 'completed todo', completed: true },
-        { id: 2, text: 'todo 1', completed: false },
-        { id: 3, text: 'todo 2', completed: false },
-        { id: 5, text: 'todo 3', completed: false }
-      ]
+      const response = await fetch('/todos')
+      if (!response.ok) throw new Error('Failed to fetch')
+      return await response.json()
     } catch (error) {
       throw new Error('Failed to fetch todos')
     }
@@ -28,10 +22,13 @@ class TodoService {
 
   async createTodo(todo: CreateTodoRequest): Promise<Todo> {
     try {
-      // TODO: Replace with actual API call
-      // fake network call delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      return { ...todo, id: Date.now() }
+      const response = await fetch('/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(todo)
+      })
+      if (!response.ok) throw new Error('Failed to create')
+      return await response.json()
     } catch (error) {
       throw new Error('Failed to create todo')
     }
@@ -39,11 +36,13 @@ class TodoService {
 
   async updateTodo(id: number, updates: Partial<Todo>): Promise<Todo> {
     try {
-      // TODO: Replace with actual API call
-      // fake network call delay
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      return { id, ...updates } as Todo
+      const response = await fetch(`/todos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      })
+      if (!response.ok) throw new Error('Failed to update')
+      return await response.json()
     } catch (error) {
       throw new Error('Failed to update todo')
     }
@@ -51,9 +50,10 @@ class TodoService {
 
   async deleteTodo(id: number): Promise<void> {
     try {
-      // TODO: Replace with actual API call to delete todo
-      // fake network call delay
-      await new Promise(resolve => setTimeout(resolve, 500))
+      const response = await fetch(`/todos/${id}`, {
+        method: 'DELETE'
+      })
+      if (!response.ok) throw new Error('Failed to delete')
     } catch (error) {
       throw new Error('Failed to delete todo')
     }

@@ -14,6 +14,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
+app.UseDefaultFiles();
+
 app.MapGet("/todos", () =>
 {
     var todos = new[]
@@ -49,6 +52,8 @@ app.MapPut("/todos/{id}", (int id, Todo updatedTodo) =>
 })
 .WithName("UpdateTodo")
 .WithOpenApi();
+
+app.MapFallbackToFile("index.html");
 
 app.Run();
 
