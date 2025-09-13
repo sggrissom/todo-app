@@ -69,19 +69,19 @@ function App() {
       const todoToUpdate = todos.find(todo => todo.id === todoId)
       if (!todoToUpdate) return
 
-      const newCompleted = !todoToUpdate.completed
+      todoToUpdate.completed = !todoToUpdate.completed
       setTodos(todos.map(todo =>
         todo.id === todoId
-          ? { ...todo, completed: newCompleted }
+          ? { ...todo, completed: todoToUpdate.completed }
           : todo
       ))
 
-      await todoService.updateTodo(todoId, { completed: newCompleted })
+      await todoService.updateTodo(todoId, todoToUpdate)
 
     } catch (err) {
       setTodos(todos.map(todo =>
         todo.id === todoId
-          ? { ...todo, completed: todoToUpdate.completed }
+          ? { ...todo, completed: !todoToUpdate.completed }
           : todo
       ))
       setError('Failed to update todo')

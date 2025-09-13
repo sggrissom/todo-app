@@ -1,9 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using TodoApi.Data;
+using TodoApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<TodoContext>(options =>
+    options.UseSqlite("Data Source=todos.db"));
 
 var app = builder.Build();
 
@@ -14,41 +21,57 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<TodoContext>();
+    context.Database.EnsureCreated();
+}
+
 app.UseStaticFiles();
 app.UseDefaultFiles();
 
-app.MapGet("/todos", () =>
+app.MapGet("/todos", async (TodoContext context) =>
 {
-    var todos = new[]
-    {
-        new Todo(1, "completed todo", false),
-        new Todo(2, "todo 1", true),
-        new Todo(3, "todo 2", false),
-        new Todo(4, "todo 3", false)
-    };
-    return todos;
+    return await context.Todos.ToListAsync();
 })
 .WithName("GetTodos")
 .WithOpenApi();
 
-app.MapPost("/todos", (Todo newTodo) =>
+app.MapPost("/todos", async (Todo newTodo, TodoContext context) =>
 {
-    var createdTodo = newTodo with { Id = Random.Shared.Next(1000, 9999) };
-    return Results.Created($"/todos/{createdTodo.Id}", createdTodo);
+    newTodo.Id = 0;
+    context.Todos.Add(newTodo);
+    await context.SaveChangesAsync();
+    return Results.Created($"/todos/{newTodo.Id}", newTodo);
 })
 .WithName("CreateTodo")
 .WithOpenApi();
 
-app.MapDelete("/todos/{id}", (int id) =>
+app.MapDelete("/todos/{id}", async (int id, TodoContext context) =>
 {
-    return Results.Ok($"Deleted todo {id}");
+    var todo = await context.Todos.FindAsync(id);
+    if (todo == null) {
+        return Results.NotFound();
+    }
+
+    context.Todos.Remove(todo);
+    await context.SaveChangesAsync();
+    return Results.Ok();
 })
 .WithName("DeleteTodo")
 .WithOpenApi();
 
-app.MapPut("/todos/{id}", (int id, Todo updatedTodo) =>
+app.MapPut("/todos/{id}", async (int id, Todo updatedTodo, TodoContext context) =>
 {
-    return Results.Ok(updatedTodo with { Id = id });
+    var todo = await context.Todos.FindAsync(id);
+    if (todo == null)
+        return Results.NotFound();
+
+    todo.Text = updatedTodo.Text;
+    todo.Completed = updatedTodo.Completed;
+
+    await context.SaveChangesAsync();
+    return Results.Ok(todo);
 })
 .WithName("UpdateTodo")
 .WithOpenApi();
@@ -56,5 +79,3 @@ app.MapPut("/todos/{id}", (int id, Todo updatedTodo) =>
 app.MapFallbackToFile("index.html");
 
 app.Run();
-
-record Todo(int Id, string Text, bool Completed);

@@ -34,6 +34,12 @@ ScaffoldingReadMe.txt
 # Generated frontend files
 TodoApi/wwwroot/
 
+# SQLite database
+*.db
+*.sqlite
+*.db-shm
+*.db-wal
+
 # NuGet Packages
 *.nupkg
 # NuGet Symbol Packages
