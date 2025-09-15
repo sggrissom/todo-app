@@ -10,8 +10,8 @@
     "preview": "vite preview",
     "build:prod": "npm run build && npm run copy:dist",
     "copy:dist": "rm -rf TodoApi/wwwroot && mkdir -p TodoApi/wwwroot && cp -r dist/* TodoApi/wwwroot/",
-    "start": "npm run build:prod && cd TodoApi && /home/sgg/.dotnet/dotnet run",
-    "start:dev": "cd TodoApi && /home/sgg/.dotnet/dotnet run"
+    "start": "npm run build:prod && cd TodoApi && dotnet run",
+    "start:dev": "cd TodoApi && dotnet run"
   },
   "dependencies": {
     "react": "^19.1.1",
